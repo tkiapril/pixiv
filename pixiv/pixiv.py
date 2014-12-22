@@ -256,7 +256,28 @@ class Work(PixivObject):
 
 
 class Illust(Work):
-    pass
+    @property
+    def original_illust_url(self):
+        if not hasattr(self, '_original_illust_url') or \
+           self._original_illust_url is None:
+            self._initialize_details()
+            soup = BeautifulSoup(self._response.text)
+            self._original_illust_url = \
+                soup.select('img.original-image')[0].attrs['data-src']
+        return self._original_illust_url
+
+    @property
+    def original_illust(self):
+        if not hasattr(self, '_original_illust') or \
+           self._original_illust is None:
+            self._initialize_details()
+            response = self._pixiv_session._session.get(
+                self.original_illust_url,
+                headers={
+                    'Referer': MEDIUM_ILLUST_PAGE.format(illust_id=self.id),
+                })
+            self._original_illust = response.content
+        return self._original_illust
 
 
 class Manga(Work):
