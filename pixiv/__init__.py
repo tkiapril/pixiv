@@ -3,6 +3,28 @@
 
 """
 
-from .pixiv import Pixiv
+from .pixiv import (
+    Pixiv,
+    PixivObject,
+    Member,
+    Work,
+    Illust,
+    Manga,
+    Ugoira,
+    Novel,
+    Tag,
+    DictionaryArticle,
+)
 
-__all__ = 'Pixiv',
+__all__ = (
+    'Pixiv',
+    'PixivObject',
+    'Member',
+    'Work',
+    'Illust',
+    'Manga',
+    'Ugoira',
+    'Novel',
+    'Tag',
+    'DictionaryArticle',
+)

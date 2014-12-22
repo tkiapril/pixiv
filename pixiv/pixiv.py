@@ -3,7 +3,18 @@ import re
 from bs4 import BeautifulSoup
 import requests
 
-__all__ = 'Pixiv', 'Member', 'Work'
+__all__ = (
+    'Pixiv',
+    'PixivObject',
+    'Member',
+    'Work',
+    'Illust',
+    'Manga',
+    'Ugoira',
+    'Novel',
+    'Tag',
+    'DictionaryArticle',
+)
 
 DEFAULT_USER_AGENT = 'Mozilla/5.0 (Windows NT 6.3; WOW64)' \
                      'AppleWebKit/537.36 (KHTML, ' \
