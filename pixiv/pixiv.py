@@ -1,3 +1,4 @@
+import json
 import re
 
 from bs4 import BeautifulSoup
@@ -28,7 +29,9 @@ WORK_URL_REGEX = re.compile(r'/member_illust\.php\?mode=medium&'
                             r'illust_id=([0-9]+)')
 MANGA_URL_REGEX = re.compile(r'member_illust\.php\?mode=manga&'
                              r'illust_id=([0-9]+)')
-USERID_REGEX = re.compile(r'pixiv\.context\.userId\s+=\s+"([0-9]+)";')
+USERID_REGEX = re.compile(r'pixiv\.context\.userId\s*=\s*"([0-9]+)";')
+UGOIRA_DATA_REGEX = re.compile(r'pixiv\.context\.ugokuIllustData'
+                               r'\s*=\s*(\{.*?\});')
 
 
 class Pixiv:
@@ -285,7 +288,38 @@ class Manga(Work):
 
 
 class Ugoira(Work):
-    pass
+    def _initialize_ugoira_data(self):
+        if not hasattr(self, '_frames') or \
+           self._frames is None or \
+           not hasattr(self, '_mime_type') or \
+           self._mime_type is None or \
+           not hasattr(self, '_original_ugoira_url') or \
+           self._original_ugoira_url is None:
+            self._initialize_details()
+            ugoira_data = json.loads(
+                UGOIRA_DATA_REGEX.search(self._response.text).group(1)
+            )
+            self._frames = ugoira_data['frames']
+            self._mime_type = ugoira_data['mime_type']
+            self._original_ugoira_url = ugoira_data['src']
+
+    @property
+    def original_ugoira_url(self):
+        self._initialize_ugoira_data()
+        return self._original_ugoira_url
+
+    @property
+    def original_ugoira(self):
+        if not hasattr(self, '_original_ugoira') or \
+           self._original_ugoira is None:
+            self._initialize_ugoira_data()
+            response = self._pixiv_session._session.get(
+                self.original_ugoira_url,
+                headers={
+                    'Referer': MEDIUM_ILLUST_PAGE.format(illust_id=self.id),
+                })
+            self._original_ugoira = response.content
+        return self._original_ugoira
 
 
 class Novel(Work):  # Note: in pixiv, internally, novel is not handled as work
