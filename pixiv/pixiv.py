@@ -183,11 +183,8 @@ class Work(PixivObject):
         self._author = author
 
         if self._pixiv_session is not None and eager and \
-           (
-            not hasattr(self, '_response') or
-            self._response is None
-        ):
-            _initialize_details()
+           (not hasattr(self, '_response') or self._response is None):
+            self._initialize_details()
 
     @staticmethod
     def _get_type_from_html(html):
